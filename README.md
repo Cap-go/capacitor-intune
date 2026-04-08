@@ -10,7 +10,7 @@ Capacitor plugin for Microsoft Intune MAM enrollment, app protection policies, a
 
 ## What it covers
 
-- Interactive and silent Microsoft sign-in with MSAL
+- Interactive and silent Microsoft sign-in with MSAL.
 - Intune account registration, enrollment, logout, and selective wipe helpers
 - Native Intune app configuration and app protection policy access
 - Native change listeners for policy and app config refresh events
@@ -512,6 +512,8 @@ Silent token acquisition options.
 
 Construct a type with a set of properties K of type T
 
-<code>{ [P in K]: T; }</code>
+<code>{
+ [P in K]: T;
+ }</code>
 
 </docgen-api>
