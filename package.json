@@ -1,6 +1,6 @@
 {
   "name": "@capgo/capacitor-intune",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "description": "Capacitor plugin for Microsoft Intune MAM enrollment, app protection policies, app config, and MSAL authentication.",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
