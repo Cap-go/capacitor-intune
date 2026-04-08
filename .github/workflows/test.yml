@@ -57,7 +57,11 @@ jobs:
       - name: Select Xcode 26
         run: |
           set -euo pipefail
-          xcode_app="$(find /Applications -maxdepth 1 -type d -name 'Xcode_26*.app' | sort | tail -n 1)"
+          stable_xcode_app="$(find /Applications -maxdepth 1 -type d -name 'Xcode_26*.app' | grep -viE '(beta|rc)' | sort | tail -n 1 || true)"
+          xcode_app="$stable_xcode_app"
+          if [ -z "$xcode_app" ]; then
+            xcode_app="$(find /Applications -maxdepth 1 -type d -name 'Xcode_26*.app' | sort | tail -n 1)"
+          fi
           if [ -n "$xcode_app" ]; then
             developer_dir="$xcode_app/Contents/Developer"
           elif xcodebuild -version | grep -q '^Xcode 26'; then
