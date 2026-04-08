@@ -44,7 +44,7 @@ jobs:
         run: bun run verify:android
   build_ios:
     timeout-minutes: 30
-    runs-on: macOS-latest
+    runs-on: macos-15
     steps:
       - name: Check out
         uses: actions/checkout@v6
@@ -54,6 +54,25 @@ jobs:
         run: bun i
       - name: Check plugin wiring
         run: bun run check:wiring
+      - name: Select Xcode 26
+        run: |
+          set -euo pipefail
+          stable_xcode_app="$(find /Applications -maxdepth 1 -type d -name 'Xcode_26*.app' | grep -viE '(beta|rc)' | sort | tail -n 1 || true)"
+          xcode_app="$stable_xcode_app"
+          if [ -z "$xcode_app" ]; then
+            xcode_app="$(find /Applications -maxdepth 1 -type d -name 'Xcode_26*.app' | sort | tail -n 1)"
+          fi
+          if [ -n "$xcode_app" ]; then
+            developer_dir="$xcode_app/Contents/Developer"
+          elif xcodebuild -version | grep -q '^Xcode 26'; then
+            developer_dir="$(xcode-select -p)"
+          else
+            echo "No Xcode 26 installation found on the runner"
+            exit 1
+          fi
+          echo "DEVELOPER_DIR=$developer_dir" >> "$GITHUB_ENV"
+          DEVELOPER_DIR="$developer_dir" xcodebuild -version
+          DEVELOPER_DIR="$developer_dir" swift --version
       - name: Build
         id: build_code
         run: bun run verify:ios
