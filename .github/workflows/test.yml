@@ -10,13 +10,9 @@ on:
 
 jobs:
   guard_swiftpm_version:
-    timeout-minutes: 30
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24.x
       - name: Check out
         uses: actions/checkout@v6
       - name: Enforce capacitor-swift-pm version
@@ -27,16 +23,16 @@ jobs:
             exit 1
           fi
   build_android:
-    timeout-minutes: 30
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
+      - name: Check out
+        uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 24.x
-      - name: Check out
-        uses: actions/checkout@v6
-      - uses: oven-sh/setup-bun@v2
       - name: Install dependencies
         id: install_code
         run: bun i
@@ -54,40 +50,21 @@ jobs:
         shell: bash
         run: bash ./.github/scripts/verify-packed-example.sh android
   build_ios:
+    runs-on: macOS-latest
     timeout-minutes: 30
-    runs-on: macos-15
     steps:
+      - name: Check out
+        uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 24.x
-      - name: Check out
-        uses: actions/checkout@v6
-      - uses: oven-sh/setup-bun@v2
       - name: Install dependencies
         id: install_code
         run: bun i
       - name: Check plugin wiring
         run: bun run check:wiring
-      - name: Select Xcode 26
-        run: |
-          set -euo pipefail
-          stable_xcode_app="$(find /Applications -maxdepth 1 -type d -name 'Xcode_26*.app' | grep -viE '(beta|rc)' | sort | tail -n 1 || true)"
-          xcode_app="$stable_xcode_app"
-          if [ -z "$xcode_app" ]; then
-            xcode_app="$(find /Applications -maxdepth 1 -type d -name 'Xcode_26*.app' | sort | tail -n 1)"
-          fi
-          if [ -n "$xcode_app" ]; then
-            developer_dir="$xcode_app/Contents/Developer"
-          elif xcodebuild -version | grep -q '^Xcode 26'; then
-            developer_dir="$(xcode-select -p)"
-          else
-            echo "No Xcode 26 installation found on the runner"
-            exit 1
-          fi
-          echo "DEVELOPER_DIR=$developer_dir" >> "$GITHUB_ENV"
-          DEVELOPER_DIR="$developer_dir" xcodebuild -version
-          DEVELOPER_DIR="$developer_dir" swift --version
       - name: Build
         id: build_code
         run: bun run verify:ios
@@ -95,14 +72,10 @@ jobs:
         shell: bash
         run: bash ./.github/scripts/verify-packed-example.sh ios
   web:
-    timeout-minutes: 30
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     name: 'Build code and test'
     steps:
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24.x
       - name: Check out
         uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
@@ -114,10 +87,6 @@ jobs:
       - name: Lint
         id: lint_code
         run: bun run lint
-      - name: Build
-        id: build_code
-        run: bun run build
-
       - name: Verify packed package in example app (Web)
         shell: bash
         run: bash ./.github/scripts/verify-packed-example.sh web
