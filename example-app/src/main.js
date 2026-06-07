@@ -1,3 +1,5 @@
+import { CapacitorUpdater } from '@capgo/capacitor-updater';
+import { Capacitor } from '@capacitor/core';
 import './style.css';
 import { IntuneMAM } from '@capgo/capacitor-intune';
 
@@ -154,3 +156,9 @@ deregisterButton.addEventListener('click', () =>
     }),
   ),
 );
+
+if (Capacitor.isNativePlatform()) {
+  CapacitorUpdater.notifyAppReady().catch((error) => {
+    console.error('Capgo notifyAppReady failed', error);
+  });
+}
