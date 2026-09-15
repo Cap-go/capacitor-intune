@@ -51,6 +51,11 @@ case "$platform" in
     if [ ! -d ios ]; then
       bunx cap add ios
     fi
+    ios_pbxproj="ios/App/App.xcodeproj/project.pbxproj"
+    if [ -f "$ios_pbxproj" ]; then
+      sed -i.bak 's/IPHONEOS_DEPLOYMENT_TARGET = 15.0/IPHONEOS_DEPLOYMENT_TARGET = 17.0/g' "$ios_pbxproj"
+      rm -f "${ios_pbxproj}.bak"
+    fi
     bunx cap sync ios
     rm -rf "$HOME/Library/Caches/org.swift.swiftpm/artifacts"/https___github_com_ionic_team_capacitor_swift_pm_releases_download_*
     xcodebuild \
