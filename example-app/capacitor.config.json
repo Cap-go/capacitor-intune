@@ -2,6 +2,9 @@
   "appId": "app.capgo.intune.example",
   "appName": "Intune Plugin Example",
   "webDir": "dist",
+  "ios": {
+    "minVersion": "17.0"
+  },
   "plugins": {
     "SplashScreen": {
       "launchAutoHide": false
