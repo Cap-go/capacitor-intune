@@ -10,6 +10,36 @@ case "$platform" in
     ;;
 esac
 
+ensure_intune_android_maven_repo() {
+  local build_file="android/build.gradle"
+  local feed="https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1"
+  if [ ! -f "$build_file" ] || grep -q 'DuoSDK-Public' "$build_file"; then
+    return 0
+  fi
+  bun -e "
+const fs = require('node:fs');
+const file = process.argv[1];
+const feed = process.argv[2];
+let txt = fs.readFileSync(file, 'utf8');
+if (txt.includes('DuoSDK-Public')) process.exit(0);
+const block = 'allprojects {\\n    repositories {\\n        google()\\n        mavenCentral()\\n    }\\n}';
+const patched = \`allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url '\${feed}'
+        }
+    }
+}\`;
+if (!txt.includes(block)) {
+  console.error('Could not patch android/build.gradle for Intune Maven feed');
+  process.exit(1);
+}
+fs.writeFileSync(file, txt.replace(block, patched));
+" "$build_file" "$feed"
+}
+
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 tmp_root="${RUNNER_TEMP:-$(mktemp -d)}"
 pack_dir="$tmp_root/plugin-package"
@@ -44,6 +74,7 @@ case "$platform" in
       bunx cap add android
     fi
     bunx cap sync android
+    ensure_intune_android_maven_repo
     cd android
     ./gradlew build test
     ;;
