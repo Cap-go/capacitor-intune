@@ -10,6 +10,39 @@ case "$platform" in
     ;;
 esac
 
+ensure_intune_android_module_includes() {
+  local settings_file="android/capacitor.settings.gradle"
+  if [ ! -f "$settings_file" ] || grep -q ':intune-mam-sdk' "$settings_file"; then
+    return 0
+  fi
+  bun -e "
+const fs = require('node:fs');
+const path = require('node:path');
+const settingsFile = process.argv[1];
+const pluginName = process.argv[2];
+const pkgJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const depName =
+  Object.keys({ ...pkgJson.dependencies, ...pkgJson.devDependencies }).find((k) =>
+    k.includes('capacitor-intune'),
+  ) || pluginName;
+const pluginRoot = path.dirname(require.resolve(depName + '/package.json'));
+const androidDir = path.join(pluginRoot, 'android');
+const relAndroid = path
+  .relative(path.dirname(settingsFile), androidDir)
+  .split(path.sep)
+  .join('/');
+const relMam = relAndroid + '/intune-mam-sdk';
+const relStubs = relAndroid + '/intune-downlevel-stubs';
+const block = \`
+include ':intune-mam-sdk'
+project(':intune-mam-sdk').projectDir = new File('\${relMam}')
+include ':intune-downlevel-stubs'
+project(':intune-downlevel-stubs').projectDir = new File('\${relStubs}')
+\`;
+fs.appendFileSync(settingsFile, block);
+" "$settings_file" "$plugin_name"
+}
+
 ensure_intune_android_maven_repo() {
   local build_file="android/build.gradle"
   local feed="https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1"
@@ -74,6 +107,7 @@ case "$platform" in
       bunx cap add android
     fi
     bunx cap sync android
+    ensure_intune_android_module_includes
     ensure_intune_android_maven_repo
     cd android
     ./gradlew build test
