@@ -1,12 +1,28 @@
 # @capgo/capacitor-intune
-<a href="https://capgo.app/"><img src="https://capgo.app/readme-banner.svg?repo=Cap-go/capacitor-intune" alt="Capgo - Instant updates for Capacitor" /></a>
+
+Make your Capacitor app manageable with Microsoft Intune: enroll accounts, apply app protection policies, read app config and sign in with MSAL. Ship to enterprises that require Intune MAM.
+
+<a href="https://capgo.app/?ref=plugin_intune"><img src="https://capgo.app/readme-banner.svg?repo=Cap-go/capacitor-intune" alt="Capgo - Instant updates for Capacitor" /></a>
 
 <div align="center">
-  <h2><a href="https://capgo.app/?ref=plugin_intune"> ➡️ Get Instant updates for your App with Capgo</a></h2>
-  <h2><a href="https://capgo.app/consulting/?ref=plugin_intune"> Missing a feature? We’ll build the plugin for you 💪</a></h2>
+  <p><b>Capgo</b>: open-source live updates for Ionic and Capacitor apps. Ship OTA fixes and features instantly, without waiting for app store review.</p>
+  <h2><a href="https://capgo.app/register/?ref=plugin_intune">➡️ Get started for free</a></h2>
+  <p>14-day unlimited free trial. No credit card required</p>
+  <p><a href="https://capgo.app/consulting/?ref=plugin_intune">Missing a feature? We'll build the plugin for you 💪</a></p>
 </div>
 
-Capacitor plugin for Microsoft Intune MAM enrollment, app protection policies, app config, and MSAL authentication.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Cap-go/capacitor-intune/main/assets/github-social-preview.png" alt="@capgo/capacitor-intune for Capacitor apps" width="300" />
+</p>
+
+## Key features
+
+- **MSAL sign-in**: `acquireToken()` and `acquireTokenSilent()` return Microsoft access tokens.
+- **Enrollment**: `registerAndEnrollAccount()`, `loginAndEnrollAccount()`, `enrolledAccount()` and `deRegisterAndUnenrollAccount()`.
+- **App config and policy**: `appConfig()`, `getPolicy()` and `groupName()`, with `appConfigChange` and `policyChange` events.
+- **Diagnostics**: `sdkVersion()` and `displayDiagnosticConsole()`.
+- **Official SDKs**: Intune App SDK and MSAL on iOS and Android.
+- **Platforms**: iOS and Android. Not available on web.
 
 ## What it covers
 
